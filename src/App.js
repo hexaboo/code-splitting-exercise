@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
-import AsyncComponent from './AsyncComponent';
+import React, { Component, Suspense } from 'react';
 import Page1 from './Components/Page1';
 import logo from './logo.svg';
 import './App.css';
 
+const AsyncPage2 = React.lazy(() => import("./Components/Page2"));
+const AsyncPage3 = React.lazy(() => import("./Components/Page3"));
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      route: 'page1',
+      route: 'page 1',
     }
   }
 
@@ -18,22 +19,22 @@ class App extends Component {
 
   render() {
     let page = null;
-    let name = '';
 
     switch (this.state.route) {
-      case 'page1':
+      case 'page 1':
         page = <Page1 onRouteChange={this.onRouteChange} />;
-        name = 'Page 1';
         break;
-      case 'page2':
-        let AsyncPage2 = AsyncComponent(() => import("./Components/Page2"));
-        page = <AsyncPage2 onRouteChange={this.onRouteChange} />;
-        name = 'Page 2';
+      case 'page 2':
+        page =
+          <Suspense fallback={<div className='Loading'><h1>Loading...</h1></div>}>
+            <AsyncPage2 onRouteChange={this.onRouteChange} />
+          </Suspense>;
         break;
-      case 'page3':
-        let AsyncPage3 = AsyncComponent(() => import("./Components/Page3"));
-        page = <AsyncPage3 onRouteChange={this.onRouteChange} />;
-        name = 'Page 3';
+      case 'page 3':
+        page =
+          <Suspense fallback={<div className='Loading'><h1>Loading...</h1></div>}>
+            <AsyncPage3 onRouteChange={this.onRouteChange} />
+          </Suspense>;
         break;
       default:
     };
@@ -42,12 +43,13 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to {name}</h1>
+          <h1 className="App-title">Welcome to {this.state.route}</h1>
         </header>
         {page}
       </div>
     );
   }
 }
+
 
 export default App;
